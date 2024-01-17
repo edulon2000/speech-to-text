@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Fala em Texto</title>
+</head>
+<body>
+    <h1>Conversor de Fala em Texto</h1>
+
+    <button onclick="converterFala()">Open mic</button>
+
+    <h2>Resultado:</h2>
+    <p id="resultado">Transcrição:
+    </p>
+
+    <script>
+        async function converterFala() {
+            const audioFileInput = document.getElementById('audioFile');
+            const resultadoElemento = document.getElementById('resultado');
+
+            const file = audioFileInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('audio', file);
+
+                try {
+                    const response = await fetch('/processar_fala', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        resultadoElemento.innerText = `Erro: ${data.error}`;
+                    } else {
+                        resultadoElemento.innerText = `Resultado: ${data.texto}`;
+                    }
+                } catch (error) {
+                    resultadoElemento.innerText = `Erro na requisição: ${error}`;
+                }
+            } else {
+                resultadoElemento.innerText = 'Por favor, selecione um arquivo de áudio.';
+            }
+        }
+    </script>
+</body>
+</html>
